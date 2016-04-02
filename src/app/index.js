@@ -5,6 +5,10 @@ import TodoModel from './model';
 import TodoFooter from './footer';
 import TodoItem from './item';
 
+// You'll need couchdb or pouchdb-server running.
+// see : https://pouchdb.com/guides/setup-couchdb.html#installing-couchdb
+const REMOTE_DB_URL = 'http://localhost:5984/todos';
+
 const ENTER_KEY = 13;
 
 const ALL_TODOS = 'all';
@@ -22,7 +26,7 @@ export default class App extends Component {
 
 	constructor() {
 		super();
-		this.model = new TodoModel('preact-todos');
+		this.model = new TodoModel(REMOTE_DB_URL);
 		this.model.subscribe( () => this.setState({}) );
 	}
 
@@ -65,7 +69,7 @@ export default class App extends Component {
 
 	@bind
 	edit(todo) {
-		this.setState({ editing: todo.id });
+		this.setState({ editing: todo._id });
 	}
 
 	@bind
@@ -121,7 +125,7 @@ export default class App extends Component {
 									onToggle={this.toggle.bind(this, todo)}
 									onDestroy={this.destroy.bind(this, todo)}
 									onEdit={this.edit.bind(this, todo)}
-									editing={editing === todo.id}
+									editing={editing === todo._id}
 									onSave={this.save.bind(this, todo)}
 									onCancel={this.cancel}
 								/>
