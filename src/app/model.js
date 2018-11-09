@@ -13,8 +13,7 @@ export default class TodoModel {
     this.localDB = new PouchDB('todos');
     this.localDB.changes({
       since: 'now',
-      live: true,
-      retry: true
+      live: true
     }).on('change', function () {
       // something change
       console.log('localDB.change');
