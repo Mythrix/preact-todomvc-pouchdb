@@ -13,12 +13,12 @@ export default class TodoModel {
     this.localDB = new PouchDB('todos');
     this.localDB.changes({
       since: 'now',
-      live: true
+      live: true,
+      retry: true
     }).on('change', function () {
       // something change
       console.log('localDB.change');
       self.draw();
-      self.syncAndDraw();
     }).on('error', function (err) {
       // totally unhandled error (shouldn't happen)
       console.log('localDB.error : ', err);
@@ -27,11 +27,10 @@ export default class TodoModel {
     // draw with localDB
     this.draw();
     
-    // then sync with remoteDB
-    this.remoteDB = new PouchDB(this.remoteDBURL);
-    this.syncAndDraw();
+    // activate sync with remoteDB
+    this.sync();
   }
-
+  
   draw() {
     var self = this;
     this.localDB.allDocs({ include_docs: true, descending: true }, function (err, doc) {
@@ -50,24 +49,17 @@ export default class TodoModel {
     this.onChanges.forEach(cb => cb());
   }
   
-  syncAndDraw() {
+  sync() {
     var self = this;
-    // sync with remote
-    this.localDB.sync(this.remoteDB).on('change', function () {
-      // something change
-      console.log('remoteDB.change');
-      self.draw();
-    }).on('remoteDB.paused', function (info) {
-      // replication was paused, usually because of a lost connection
-      console.log('remoteDB.paused : ', info);
-    }).on('active', function (info) {
-      // replication was resumed
-      console.log('remoteDB.active : ', info);
-    }).on('error', function (err) {
-      // totally unhandled error (shouldn't happen)
-      console.log('remoteDB.error : ', err);
-    });
+    this.remoteDB = new PouchDB(this.remoteDBURL);
+    var opts = {live: true, retry: true};
+    this.localDB.replicate.to(this.remoteDBURL, opts, this.syncError);
+    this.localDB.replicate.from(this.remoteDBURL, opts, this.syncError);
   }
+  syncError(err) {
+    console.log('remoteDB.error: '+err);
+  }
+
 
   addTodo(title) {
     var todo = {
@@ -100,7 +92,13 @@ export default class TodoModel {
   }
 
   save(todoToSave, title) {
-    this.localDB.put(todoToSave);
+    if (todoToSave.title != title) {
+      todoToSave.title = title;
+      this.localDB.put(todoToSave,function callback(err, result){
+        if (!err) console.log('Successfully saved a todo!');
+        else console.log('Error: '+err+', Result: '+result);
+      });
+    }
   }
 
   clearCompleted() {

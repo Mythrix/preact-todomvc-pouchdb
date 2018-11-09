@@ -1,14 +1,11 @@
-# Preact TodoMVC
+# Preact TodoMVC - With real-time updates
 
-- [**Demo**](https://preact-todomvc.surge.sh)
-- [**Demo with PouchDB**](http://katopz.github.io/preact-todomvc-pouchdb/)
+A modified version of [katopz' preact-todomvc-pouchdb example project](https://github.com/katopz/preact-todomvc-pouchdb).
 
-TodoMVC done in [Preact]. The app is 7kb of minified + gzipped JavaScript.
+I used code from [PouchDB's own TodoMVC guide](https://pouchdb.com/getting-started.html) to make this project work properly with real-time updates. With this version, if you open the todo page in two browsers/browser sessions and make changes to the todo list, the edits will immediately be shown in the other browser session. (As long as you have a PouchDB server running and your demo page can connect to it properly.)
 
-This is an ES6 + Preact port of the [ES5 + React TodoMVC example](https://github.com/tastejs/todomvc/tree/gh-pages/examples/react).
+I hope the code is correct and not using any wrong understandings of Preact or PouchDB, I'm currently learning Preact and PouchDB from scratch myself, so I barely have any idea what I'm doing.
 
-[preact]: https://github.com/developit/preact
-
-# FYI
-
-This is POC [Preact](https://preactjs.com/) integrate with [PouchDB](https://pouchdb.com/) without properly test (yeah I know sorry!), use at your own risk!.
+* [Preact](https://preactjs.com/)
+* [PouchDB](https://pouchdb.com/)
+* [TodoMVC](http://todomvc.com/)
